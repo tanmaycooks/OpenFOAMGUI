@@ -13,7 +13,21 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    initial_yaml = ""
+    load_path = request.args.get('load')
+    if load_path:
+        # Security Note: In production, sanitize this path! 
+        # For this local tool, we allow reading absolute/relative paths for convenience.
+        if os.path.exists(load_path):
+            try:
+                with open(load_path, 'r') as f:
+                    initial_yaml = f.read()
+            except Exception as e:
+                initial_yaml = f"# Error loading file: {e}"
+        else:
+             initial_yaml = f"# File not found: {load_path}"
+             
+    return render_template('index.html', initial_yaml=initial_yaml)
 
 @app.route('/process', methods=['POST'])
 def process_yaml():

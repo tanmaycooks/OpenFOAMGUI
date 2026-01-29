@@ -1,0 +1,38 @@
+root:
+  value: Boss
+  left:
+    value: Engineering
+    left:
+      value: Backend
+      left:
+        value: Dev_Lead
+        left:
+          value: Database_Opt
+        right:
+          value: API_V2
+      right:
+        value: Dev_Intern
+    right:
+      value: Frontend
+      left:
+        value: Design_Lead
+      right:
+        value: UI_Dev
+  right:
+    value: Sales
+    left:
+      value: Domestic
+      left:
+        value: Sales_Manager_A
+      right:
+        value: Sales_Rep_1
+    right:
+      value: International
+      left:
+        value: Global_Head
+      right:
+        value: Regional_VP
+        left:
+          value: Europe_Market
+        right:
+          value: Asia_Market

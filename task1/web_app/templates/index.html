@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="code-editor-container" style="height: 45%;">
-                    <textarea id="yamlInput" spellcheck="false" placeholder="Enter YAML here...">root:
+                    <textarea id="yamlInput" spellcheck="false" placeholder="Enter YAML here...">{% if initial_yaml %}{{ initial_yaml }}{% else %}root:
   value: 10
   left:
     value: 5
@@ -50,7 +50,7 @@
   right:
     value: 15
     right:
-      value: 20</textarea>
+      value: 20{% endif %}</textarea>
                 </div>
 
                 <div class="pane-header" style="margin-top: 1rem;">
