@@ -6,7 +6,8 @@ import yaml
 
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from logic import build_tree_from_yaml, node_to_dict, dict_to_node
+from logic import build_tree_from_yaml, node_to_dict, dict_to_node, tree_to_yaml_string
+import webbrowser
 
 app = Flask(__name__)
 
@@ -44,8 +45,13 @@ def process_yaml():
         root = dict_to_node(tree_data)
         # Convert back to dict to ensure we have the processed structure (including any defaults/logic)
         processed_data = node_to_dict(root)
+        output_yaml = tree_to_yaml_string(root)
         
-        return jsonify({'tree': processed_data, 'message': 'Tree built successfully'})
+        return jsonify({
+            'tree': processed_data, 
+            'output_yaml': output_yaml,
+            'message': 'Tree built successfully'
+        })
         
     except yaml.YAMLError as e:
         return jsonify({'error': f"YAML Syntax Error: {str(e)}"}), 400
@@ -53,4 +59,9 @@ def process_yaml():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    url = "http://localhost:5000"
+    print(f"\n\033[92m[+] Web App running at: {url}\033[0m")
+    print("\033[94m[+] Click the link above or copy it to your browser to visualize.\033[0m\n")
+    # Optional: Auto open
+    # webbrowser.open_new(url)
     app.run(debug=True, port=5000)

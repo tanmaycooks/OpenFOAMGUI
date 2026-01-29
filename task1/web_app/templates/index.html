@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,14 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- D3.js for tree visualization -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
     <div class="background-blobs">
         <div class="blob blob-1"></div>
@@ -25,16 +29,18 @@
             <h1><i class="fa-solid fa-network-wired"></i> YAML Tree Architect</h1>
             <p> Visualize and Process Binary Trees instantly.</p>
         </header>
-        
+
         <main class="split-view">
             <section class="editor-pane">
                 <div class="pane-header">
                     <h2><i class="fa-solid fa-code"></i> YAML Input</h2>
                     <div class="actions">
                         <button id="renderBtn" class="primary-btn"><i class="fa-solid fa-play"></i> Render</button>
+                        <button id="visualizeBtn" class="primary-btn secondary-btn"><i class="fa-solid fa-expand"></i>
+                            Visual Dashboard</button>
                     </div>
                 </div>
-                <div class="code-editor-container">
+                <div class="code-editor-container" style="height: 45%;">
                     <textarea id="yamlInput" spellcheck="false" placeholder="Enter YAML here...">root:
   value: 10
   left:
@@ -46,11 +52,18 @@
     right:
       value: 20</textarea>
                 </div>
+
+                <div class="pane-header" style="margin-top: 1rem;">
+                    <h2><i class="fa-solid fa-file-code"></i> Output YAML</h2>
+                </div>
+                <div class="code-editor-container" style="height: 40%;">
+                    <textarea id="yamlOutput" readonly placeholder="Processed YAML will appear here..."></textarea>
+                </div>
             </section>
-            
+
             <section class="visual-pane">
                 <div class="pane-header">
-                    <h2><i class="fa-solid fa-sitemap"></i> Visualization</h2>
+                    <h2><i class="fa-solid fa-sitemap"></i> Live Preview</h2>
                 </div>
                 <div id="tree-container" class="canvas-container">
                     <div class="placeholder-text">
@@ -62,6 +75,32 @@
         </main>
     </div>
 
+    <!-- Visualization Modal -->
+    <div id="visualModal" class="modal">
+        <div class="modal-content glass-container" style="width: 95vw; height: 95vh;">
+            <header style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <h1><i class="fa-solid fa-chart-network"></i> Interactive Dashboard</h1>
+                <button id="closeModalBtn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </header>
+
+            <div class="dashboard-grid">
+                <div class="dash-card">
+                    <h3>Input</h3>
+                    <pre id="dashInput"></pre>
+                </div>
+                <div class="dash-card center-card">
+                    <h3>Visual Tree</h3>
+                    <div id="dashTreeContainer" class="canvas-container"></div>
+                </div>
+                <div class="dash-card">
+                    <h3>Output</h3>
+                    <pre id="dashOutput"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

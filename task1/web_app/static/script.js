@@ -1,7 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const renderBtn = document.getElementById('renderBtn');
+    const visualizeBtn = document.getElementById('visualizeBtn');
     const yamlInput = document.getElementById('yamlInput');
+    const yamlOutput = document.getElementById('yamlOutput');
     const treeContainer = document.getElementById('tree-container');
+
+    // Modal Elements
+    const modal = document.getElementById('visualModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const dashInput = document.getElementById('dashInput');
+    const dashOutput = document.getElementById('dashOutput');
+    const dashTreeContainer = document.getElementById('dashTreeContainer');
+
+    let currentTreeData = null; // Store for dashboard
 
     renderBtn.addEventListener('click', async () => {
         const yamlContent = yamlInput.value;
@@ -23,9 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                renderTree(data.tree);
+                currentTreeData = data.tree;
+                renderTree(data.tree, "#tree-container");
+                // Update Output YAML
+                yamlOutput.value = data.output_yaml || "No output generated.";
             } else {
                 showError(data.error);
+                yamlOutput.value = "Error processing YAML.";
             }
         } catch (error) {
             showError("Network Error: " + error.message);
@@ -34,6 +49,40 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBtn.disabled = false;
         }
     });
+
+    // Visualize Button Logic
+    visualizeBtn.addEventListener('click', () => {
+        if (!currentTreeData) {
+            alert("Please render a valid tree first!");
+            return;
+        }
+
+        // Populate Dashboard
+        dashInput.textContent = yamlInput.value;
+        dashOutput.textContent = yamlOutput.value;
+
+        // Show Modal
+        modal.style.display = 'flex';
+
+        // Render Tree in Dashboard (need timeout to wait for modal display for dimension calc)
+        setTimeout(() => {
+            renderTree(currentTreeData, "#dashTreeContainer");
+        }, 100);
+    });
+
+    // Close Modal Logic
+    closeModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        // Clear dashboard tree to save memory/clean state
+        d3.select("#dashTreeContainer").selectAll("*").remove();
+    });
+
+    // Close on click outside
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
 });
 
 function showError(message) {
@@ -46,8 +95,8 @@ function showError(message) {
     `;
 }
 
-function renderTree(treeData) {
-    const container = document.getElementById('tree-container');
+function renderTree(treeData, containerSelector) {
+    const container = document.querySelector(containerSelector);
     container.innerHTML = ''; // Clear previous
 
     if (!treeData) return;
@@ -57,7 +106,7 @@ function renderTree(treeData) {
     const height = container.clientHeight;
 
     // Create SVG
-    const svg = d3.select("#tree-container").append("svg")
+    const svg = d3.select(containerSelector).append("svg")
         .attr("width", width)
         .attr("height", height)
         .call(d3.zoom().on("zoom", (event) => {

@@ -94,3 +94,8 @@ def build_tree_from_yaml(file_path: str) -> Node:
     if "root" in data:
         return dict_to_node(data["root"])
     return dict_to_node(data)
+
+def tree_to_yaml_string(root: Node) -> str:
+    """Convert Tree to YAML string."""
+    data = {"root": node_to_dict(root)}
+    return yaml.dump(data, default_flow_style=False, sort_keys=False)
