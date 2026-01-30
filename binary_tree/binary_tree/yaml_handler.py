@@ -1,62 +1,21 @@
-
 import yaml
-from typing import List, Optional, Any
-
-# --- Node Class ---
-class Node:
-    """
-    A Node class representing a node in a Binary Tree.
-    """
-    def __init__(self, value: Any, children: Optional[List['Node']] = None):
-        self.value = value
-        self.children = children if children is not None else []
-
-    @property
-    def left(self) -> Optional['Node']:
-        if len(self.children) > 0:
-            return self.children[0]
-        return None
-
-    @left.setter
-    def left(self, node: Optional['Node']):
-        if not self.children:
-            self.children = [node]
-        else:
-            self.children[0] = node
-
-    @property
-    def right(self) -> Optional['Node']:
-        if len(self.children) > 1:
-            return self.children[1]
-        return None
-
-    @right.setter
-    def right(self, node: Optional['Node']):
-        if len(self.children) == 0:
-            self.children = [None, node]
-        elif len(self.children) == 1:
-            self.children.append(node)
-        else:
-            self.children[1] = node
-
-    def __repr__(self):
-        return f"Node({self.value})"
-
-# --- Utils ---
-def create_tree(root_value) -> Node:
-    return Node(root_value)
+from .node import Node
+from .utils import create_tree
 
 def node_to_dict(node: Node) -> dict:
+    """Convert Node to dictionary for YAML."""
     if not node:
         return None
     
     data = {"value": node.value}
     
+    # Check if has children
     if node.left:
         data["left"] = node_to_dict(node.left)
     if node.right:
         data["right"] = node_to_dict(node.right)
         
+    # Bonus: general children
     if len(node.children) > 2:
         other_children = []
         for i in range(2, len(node.children)):
@@ -65,9 +24,11 @@ def node_to_dict(node: Node) -> dict:
                 other_children.append(node_to_dict(child))
         if other_children:
             data["children_extra"] = other_children
+
     return data
 
 def dict_to_node(data: dict) -> Node:
+    """Convert dictionary to Node."""
     if not data:
         return None
     
@@ -82,18 +43,34 @@ def dict_to_node(data: dict) -> Node:
         
     if "children_extra" in data:
         for child_data in data["children_extra"]:
-            while len(node.children) < 2:
-                node.children.append(None)
+            if len(node.children) < 2:
+                # Pad with None if needed? 
+                # If we have extra children, we assume left/right might be filled or None.
+                # Just append.
+                while len(node.children) < 2:
+                    node.children.append(None)
             node.children.append(dict_to_node(child_data))
             
     return node
 
 def build_tree_from_yaml(file_path: str) -> Node:
+    """Parse YAML file to Tree."""
     with open(file_path, 'r') as f:
         data = yaml.safe_load(f)
+    
+    # Expect root key? Or direct object? 
+    # Usually defaults to direct object if root starts data, 
+    # or "root: ..." key. 
+    # Let's support "root" key or top-level.
     if "root" in data:
         return dict_to_node(data["root"])
     return dict_to_node(data)
+
+def write_tree_to_yaml(root: Node, file_path: str):
+    """Write Tree to YAML file."""
+    data = {"root": node_to_dict(root)}
+    with open(file_path, 'w') as f:
+        yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
 def tree_to_yaml_string(root: Node) -> str:
     """Convert Tree to YAML string."""

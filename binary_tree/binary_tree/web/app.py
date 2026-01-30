@@ -1,13 +1,13 @@
-
 from flask import Flask, render_template, request, jsonify
 import sys
 import os
 import yaml
-
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from logic import build_tree_from_yaml, node_to_dict, dict_to_node, tree_to_yaml_string
 import webbrowser
+
+# Use relative imports from the package
+from ..yaml_handler import dict_to_node, node_to_dict, tree_to_yaml_string
+# We don't strictly need build_tree_from_yaml here as we parse string directly, 
+# but if needed: from ..yaml_handler import build_tree_from_yaml
 
 app = Flask(__name__)
 
@@ -16,8 +16,6 @@ def index():
     initial_yaml = ""
     load_path = request.args.get('load')
     if load_path:
-        # Security Note: In production, sanitize this path! 
-        # For this local tool, we allow reading absolute/relative paths for convenience.
         if os.path.exists(load_path):
             try:
                 with open(load_path, 'r') as f:
@@ -35,29 +33,15 @@ def process_yaml():
         content = request.json.get('yaml')
         if not content:
             return jsonify({'error': 'No YAML content provided'}), 400
-            
-        # Parse YAML to dict first to validate and structure
-        # We use a temporary file or just parse string directly if the library supports it.
-        # The library build_tree_from_yaml takes a file path.
-        # We might need to modify the library or write a temp file.
-        # Let's check binary_tree_yaml/yaml_handler.py content again.
-        # It has build_tree_from_yaml(file_path).
-        # But it also has dict_to_node(data). 
-        # So we can just yaml.safe_load(string) -> dict -> dict_to_node.
-        
-        # Parse YAML string
+
         data = yaml.safe_load(content)
         
-        # Handle "root" key if present (matching library logic)
         if isinstance(data, dict) and "root" in data:
             tree_data = data["root"]
         else:
             tree_data = data
             
-        # from binary_tree_yaml.yaml_handler import dict_to_node
-        
         root = dict_to_node(tree_data)
-        # Convert back to dict to ensure we have the processed structure (including any defaults/logic)
         processed_data = node_to_dict(root)
         output_yaml = tree_to_yaml_string(root)
         
@@ -72,10 +56,13 @@ def process_yaml():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-if __name__ == '__main__':
+def main():
+    """Entry point for the CLI."""
     url = "http://localhost:5000"
     print(f"\n\033[92m[+] Web App running at: {url}\033[0m")
     print("\033[94m[+] Click the link above or copy it to your browser to visualize.\033[0m\n")
-    # Optional: Auto open
-    # webbrowser.open_new(url)
-    app.run(debug=True, port=5000)
+    # Only open if explicitly requested or let user click. User prefers manual click.
+    app.run(debug=False, port=5000) # Debug false for CLI usage usually
+
+if __name__ == '__main__':
+    main()
