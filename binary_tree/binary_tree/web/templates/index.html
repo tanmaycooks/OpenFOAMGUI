@@ -85,8 +85,16 @@
 
             <div class="dashboard-grid">
                 <div class="dash-card">
-                    <h3>Input</h3>
-                    <pre id="dashInput"></pre>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h3>Input</h3>
+                        <button id="dashUpdateBtn" class="primary-btn"
+                            style="padding: 0.2rem 0.8rem; font-size: 0.8rem;">
+                            <i class="fa-solid fa-rotate"></i> Update
+                        </button>
+                    </div>
+                    <textarea id="dashInput" spellcheck="false"
+                        style="width: 100%; height: 300px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace; resize: vertical;"></textarea>
                 </div>
                 <div class="dash-card center-card">
                     <h3>Visual Tree</h3>

@@ -12,10 +12,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashOutput = document.getElementById('dashOutput');
     const dashTreeContainer = document.getElementById('dashTreeContainer');
 
+    const dashUpdateBtn = document.getElementById('dashUpdateBtn');
+
     let currentTreeData = null; // Store for dashboard
+
+    // --- Dashboard Update Logic ---
+    dashUpdateBtn.addEventListener('click', async () => {
+        const yamlContent = dashInput.value;
+        const originalText = dashUpdateBtn.innerHTML;
+        dashUpdateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        dashUpdateBtn.disabled = true;
+
+        try {
+            const response = await fetch('/process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ yaml: yamlContent }),
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                renderTree(data.tree, "#dashTreeContainer");
+                dashOutput.textContent = data.output_yaml || "No output generated.";
+            } else {
+                dashOutput.textContent = "Error: " + data.error;
+            }
+        } catch (error) {
+            dashOutput.textContent = "Network Error: " + error.message;
+        } finally {
+            dashUpdateBtn.innerHTML = originalText;
+            dashUpdateBtn.disabled = false;
+        }
+    });
 
     renderBtn.addEventListener('click', async () => {
         const yamlContent = yamlInput.value;
+        // ... (rest of render logic is same, but I need to be careful not to delete it)
+
 
         // Slight button animation/loading state
         const originalText = renderBtn.innerHTML;
@@ -58,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Populate Dashboard
-        dashInput.textContent = yamlInput.value;
+        dashInput.value = yamlInput.value;
         dashOutput.textContent = yamlOutput.value;
 
         // Show Modal
