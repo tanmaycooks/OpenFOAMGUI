@@ -4,7 +4,7 @@ import os
 # Ensure we can import the package locally if not installed
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 
-from binary_tree_yaml import build_tree_from_yaml, print_tree, print_range, add_node, delete_node, write_tree_to_yaml
+from binary_tree import build_tree_from_yaml, print_tree, print_range, add_node, delete_node, write_tree_to_yaml
 
 def main():
     yaml_file = "test.yaml"

@@ -45,13 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    renderBtn.addEventListener('click', async () => {
+    // Extracted Render Function to be reusable and awaitable
+    async function triggerRender() {
         const yamlContent = yamlInput.value;
-        // ... (rest of render logic is same, but I need to be careful not to delete it)
-
-
-        // Slight button animation/loading state
         const originalText = renderBtn.innerHTML;
+
         renderBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Rendering...';
         renderBtn.disabled = true;
 
@@ -71,16 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderTree(data.tree, "#tree-container");
                 // Update Output YAML
                 yamlOutput.value = data.output_yaml || "No output generated.";
+                return true; // Success
             } else {
                 showError(data.error);
                 yamlOutput.value = "Error processing YAML.";
+                return false; // Failure
             }
         } catch (error) {
             showError("Network Error: " + error.message);
+            return false; // Failure
         } finally {
             renderBtn.innerHTML = originalText;
             renderBtn.disabled = false;
         }
+    }
+
+    renderBtn.addEventListener('click', () => {
+        triggerRender();
     });
 
     // Visualize Button Logic
@@ -119,13 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto-Run if query param loaded content
     if (yamlInput.value.trim().length > 0 && yamlInput.value.includes("root")) {
-        // Auto-click render
-        renderBtn.click();
-
-        // Wait for render to complete (simple timeout)
-        setTimeout(() => {
-            visualizeBtn.click();
-        }, 800);
+        // Use async function to wait for render
+        (async () => {
+            const success = await triggerRender();
+            if (success) {
+                // No timeout needed anymore, data is ready
+                visualizeBtn.click();
+            }
+        })();
     }
 });
 

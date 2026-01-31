@@ -1,0 +1,30 @@
+root:
+  value: CEO
+  left:
+    value: CTO
+    left:
+      value: VPEngr
+      left:
+        value: DevLead
+      right:
+        value: QALead
+    right:
+      value: VPProduct
+      left:
+        value: ProdMgr
+      right:
+        value: DesignLead
+  right:
+    value: CFO
+    left:
+      value: VPFinance
+      left:
+        value: Accountant
+      right:
+        value: Analyst
+    right:
+      value: VPOps
+      left:
+        value: OpsMgr
+      right:
+        value: HRMgr

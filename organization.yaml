@@ -1,7 +1,7 @@
 root:
   value: CEO
   left:
-    value: CTO
+    value: CTOoo
     left:
       value: VPEngr
       left:
@@ -9,7 +9,7 @@ root:
       right:
         value: QALead
     right:
-      value: VPProduct
+      value: '234'
       left:
         value: ProdMgr
       right:
